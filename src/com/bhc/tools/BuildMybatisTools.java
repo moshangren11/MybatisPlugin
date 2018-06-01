@@ -104,6 +104,7 @@ public class BuildMybatisTools {
 			ByteArrayOutputStream fos = new ByteArrayOutputStream();
 			XMLWriter writer = new XMLWriter(fos);
 			writer.write(document);
+			writer.flush();
 			writer.close();
 			ByteArrayInputStream fis = parse(fos);
 

@@ -1,21 +1,22 @@
 <idea-plugin>
   <id>com.bhc.plugin.mybatis</id>
   <name>Build Mybatis File Plugin</name>
-  <version>1.0</version>
+  <version>1.0.4</version>
   <vendor email="315316371@qq.com" url="https://github.com/moshangren11/MybatisPlugin">MybatisPlugin</vendor>
 
-  <description><![CDATA[
-      通过MyBatis Generator自动生成实体、mapper和dao层文件
-    ]]></description>
+  <description><![CDATA[MybatisPlugin.zip
+  Automatically generate entity, mapper, and dao files with MyBatis Generator
+  ]]></description>
 
   <change-notes><![CDATA[
-      添加设置页面<br>
-      添加菜单项
+      修改包名输入框宽度<br>
+      修改表名输入框宽度以及增加垂直方向滚动条<br>
+      修复生成mapper文件代码重复的问题
     ]]>
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="173.0"/>
+  <idea-version since-build="171.0"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->

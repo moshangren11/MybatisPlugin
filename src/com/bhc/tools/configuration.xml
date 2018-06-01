@@ -4,10 +4,12 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <!-- 第一种mybatis逆向生成xml配置 -->
 <generatorConfiguration>
+    <!--<classPathEntry location="ojdbc6.jar" />-->
     <!--<properties resource="jdbc.properties" />-->
     <context id="sqlserverTables" targetRuntime="MyBatis3">
         <!-- 生成的pojo，将implements Serializable-->
-        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"></plugin>
+        <!--<plugin type="org.mybatis.generator.plugins.SerializablePlugin"></plugin>-->
+        <plugin type="com.bhc.plugin.OverIsMergeablePlugin"></plugin>
         <commentGenerator>
             <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
             <property name="suppressAllComments" value="true" />

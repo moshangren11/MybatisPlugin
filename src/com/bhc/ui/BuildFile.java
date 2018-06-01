@@ -21,6 +21,7 @@ public class BuildFile extends JDialog {
 	private JTextField clientField;
 	private JLabel clientLabel;
 	private JLabel modelLabel;
+	private JScrollPane jScrollPane;
 	private MybatisPluginSetting setting = MybatisPluginSetting.getInstance();
 
 
@@ -61,9 +62,12 @@ public class BuildFile extends JDialog {
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
 		this.setTitle("Build Mybatis File");
-		this.setSize(300, 200);
+		this.setSize(500, 400);
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
+		this.tableTextArea.setLineWrap(true);
+		this.tableTextArea.setWrapStyleWord(true);
+		this.jScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		modelField.setText(setting.getModel());
 		sqlmapField.setText(setting.getSqlmap());
 		clientField.setText(setting.getClient());
