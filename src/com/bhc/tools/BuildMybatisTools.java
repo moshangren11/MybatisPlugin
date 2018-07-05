@@ -95,8 +95,14 @@ public class BuildMybatisTools {
 			for (String table : tables) {
 				if(StringUtils.isNotBlank(table)) {
 					Element tableElem = contactElem.addElement("table");
+					tableElem.addAttribute("schema", username);
 					tableElem.addAttribute("tableName", table);
 					tableElem.addAttribute("domainObjectName", MybatisTools.lineToHump(table));
+
+					Element propertyElem = tableElem.addElement("property ");
+					propertyElem.addAttribute("name","ignoreQualifiersAtRuntime");
+					propertyElem.addAttribute("value","true");
+					tableElem.add((Element) propertyElem.clone());
 					contactElem.add((Element) tableElem.clone());
 				}
 			}

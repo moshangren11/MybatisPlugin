@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.bhc.plugin.mybatis</id>
   <name>Build Mybatis File Plugin</name>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <vendor email="315316371@qq.com" url="https://github.com/moshangren11/MybatisPlugin">MybatisPlugin</vendor>
 
   <description><![CDATA[MybatisPlugin.zip
@@ -9,9 +9,7 @@
   ]]></description>
 
   <change-notes><![CDATA[
-      修改包名输入框宽度<br>
-      修改表名输入框宽度以及增加垂直方向滚动条<br>
-      修复生成mapper文件代码重复的问题
+      修改多实例多用户情况下覆盖生成文件的问题
     ]]>
   </change-notes>
 
