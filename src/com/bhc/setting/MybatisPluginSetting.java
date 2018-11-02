@@ -9,17 +9,25 @@
  */
 package com.bhc.setting;
 
+import com.bhc.bean.DatabaseConfig;
+import com.bhc.bean.MainConfig;
+import com.bhc.bean.PackageConfig;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ClassName MybatisPluginSetting
- * Description TODO
+ * Description 缓存配置类
+ *
  * @author zhanggd16816 zhanggd16816@hundsun.com
  * @date 2018-05-18 0018 1:30
  */
@@ -29,17 +37,11 @@ import org.jetbrains.annotations.Nullable;
 )
 public class MybatisPluginSetting implements PersistentStateComponent<Element> {
 
-	private String javaPath;
-	private String resourcesPath;
-	private String dbName;
-	private String dbHost;
-	private String dbPort;
-	private String username;
-	private String passwd;
-	private String dbType;
-	private String model;
-	private String sqlmap;
-	private String client;
+	private List<MainConfig> mcs;
+
+	private List<DatabaseConfig> dcs;
+
+	private List<PackageConfig> pcs;
 
 	private MybatisPluginSetting() {
 	}
@@ -51,122 +53,270 @@ public class MybatisPluginSetting implements PersistentStateComponent<Element> {
 
 	@Override
 	public void loadState(@NotNull Element element) {
-		this.setDbHost(element.getAttributeValue("dbHost"));
-		this.setDbName(element.getAttributeValue("dbName"));
-		this.setDbPort(element.getAttributeValue("dbPort"));
-		this.setJavaPath(element.getAttributeValue("javaPath"));
-		this.setResourcesPath(element.getAttributeValue("resourcesPath"));
-		this.setUsername(element.getAttributeValue("username"));
-		this.setPasswd(element.getAttributeValue("password"));
-		this.setDbType(element.getAttributeValue("dbType"));
-		this.setModel(element.getAttributeValue("model"));
-		this.setSqlmap(element.getAttributeValue("sqlmap"));
-		this.setClient(element.getAttributeValue("client"));
+
+		if(null == element){
+			return;
+		}
+
+		//路径设置
+		mcs = new ArrayList<>();
+		Element mcsElement = null;
+		try {
+			mcsElement = element.getChild("MainConfigs");
+		} catch (Exception e) {
+			System.out.println("mcsElement为空");
+		}
+		if (null != mcsElement) {
+			List<Element> mainConfigElements = mcsElement.getChildren("MainConfig");
+			if (mainConfigElements.size() > 0) {
+				for (Element mainConfigElement : mainConfigElements) {
+					MainConfig mc = new MainConfig();
+					String name = mainConfigElement.getAttributeValue("name");
+					mc.setName(name);
+					String javaPath = mainConfigElement.getAttributeValue("javaPatch");
+					mc.setJavaPath(javaPath);
+					String resourcesPatch = mainConfigElement.getAttributeValue("resourcesPatch");
+					mc.setResourcesPath(resourcesPatch);
+					mc.setFlag(mainConfigElement.getAttributeValue("flag"));
+					mcs.add(mc);
+				}
+			}
+		}
+
+		//数据库配置
+		dcs = new ArrayList<>();
+		Element dcsElement = null;
+		try {
+			dcsElement = element.getChild("DatabaseConfigs");
+		} catch (Exception e) {
+			System.out.println("dcsElement为空");
+		}
+		if (null != dcsElement) {
+			List<Element> databaseConfigElements = dcsElement.getChildren("DatabaseConfig");
+			if (databaseConfigElements.size() > 0) {
+				for (Element dce : databaseConfigElements) {
+					DatabaseConfig dc = new DatabaseConfig();
+					dc.setDatabaseName(dce.getAttributeValue("databaseName"));
+					dc.setDatabaseType(dce.getAttributeValue("databaseType"));
+					dc.setHost(dce.getAttributeValue("host"));
+					dc.setOtherName(dce.getAttributeValue("otherName"));
+					dc.setPasswd(dce.getAttributeValue("passwd"));
+					dc.setPort(dce.getAttributeValue("port"));
+					dc.setUserName(dce.getAttributeValue("userName"));
+					dc.setFlag(dce.getAttributeValue("flag"));
+					dcs.add(dc);
+				}
+			}
+		}
+
+		//包路径配置
+		pcs = new ArrayList<>();
+		Element pcsElement = null;
+		try {
+			pcsElement = element.getChild("PackageConfigs");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (null != pcsElement) {
+			List<Element> packageConfigElements = pcsElement.getChildren("PackageConfig");
+			if (packageConfigElements.size() > 0) {
+				for (Element pce : packageConfigElements) {
+					PackageConfig pc = new PackageConfig();
+					pc.setName(pce.getAttributeValue("name"));
+					pc.setDaoPackage(pce.getAttributeValue("daoPackage"));
+					pc.setModelPackage(pce.getAttributeValue("modelPackage"));
+					pc.setSqlmapPackage(pce.getAttributeValue("sqlmapPackage"));
+					pc.setFlag(pce.getAttributeValue("flag"));
+					pcs.add(pc);
+				}
+			}
+		}
 	}
 
 	@Nullable
 	@Override
 	public Element getState() {
 		Element element = new Element("MybatisPluginSetting");
-		element.setAttribute("javaPath", this.getJavaPath());
-		element.setAttribute("resourcesPath", this.getResourcesPath());
-		element.setAttribute("dbName", this.getDbName());
-		element.setAttribute("dbHost", this.getDbHost());
-		element.setAttribute("dbPort", this.getDbPort());
-		element.setAttribute("username",this.getUsername());
-		element.setAttribute("password",this.getPasswd());
-		element.setAttribute("dbType",this.getDbType());
-		element.setAttribute("model",this.getModel());
-		element.setAttribute("sqlmap",this.getSqlmap());
-		element.setAttribute("client",this.getClient());
+		if (null != mcs && mcs.size() > 0) {
+			Element mcsElement = new Element("MainConfigs");
+			for (MainConfig mc : mcs) {
+				//主配置
+				Element mainConfigElement = new Element("MainConfig");
+				mainConfigElement.setAttribute("name", mc.getName());
+				mainConfigElement.setAttribute("javaPatch", mc.getJavaPath());
+				mainConfigElement.setAttribute("resourcesPatch", mc.getResourcesPath());
+				mainConfigElement.setAttribute("flag", mc.getFlag());
+				mcsElement.addContent(mainConfigElement);
+			}
+			element.addContent(mcsElement);
+		}
+
+		//数据库配置
+		if (null != dcs && dcs.size() > 0) {
+			Element dcsElement = new Element("DatabaseConfigs");
+			for (DatabaseConfig md : dcs) {
+				Element databaseConfigElement = new Element("DatabaseConfig");
+				databaseConfigElement.setAttribute("otherName", md.getDatabaseName());
+				databaseConfigElement.setAttribute("databaseName", md.getDatabaseName());
+				databaseConfigElement.setAttribute("host", md.getHost());
+				databaseConfigElement.setAttribute("port", md.getPort());
+				databaseConfigElement.setAttribute("databaseType", md.getDatabaseType());
+				databaseConfigElement.setAttribute("userName", md.getUserName());
+				databaseConfigElement.setAttribute("passwd", md.getPasswd());
+				databaseConfigElement.setAttribute("flag", md.getFlag());
+				dcsElement.addContent(databaseConfigElement);
+			}
+			element.addContent(dcsElement);
+		}
+
+		//包路径配置
+		if (null != pcs && pcs.size() > 0) {
+			Element pcsElement = new Element("PackageConfigs");
+			for (PackageConfig mp : pcs) {
+				Element packageConfigElement = new Element("PackageConfig");
+				packageConfigElement.setAttribute("name", mp.getName());
+				packageConfigElement.setAttribute("daoPackage", mp.getDaoPackage());
+				packageConfigElement.setAttribute("modelPackage", mp.getModelPackage());
+				packageConfigElement.setAttribute("sqlmapPackage", mp.getSqlmapPackage());
+				packageConfigElement.setAttribute("flag", mp.getFlag());
+				pcsElement.addContent(packageConfigElement);
+			}
+			element.addContent(pcsElement);
+		}
+
 		return element;
 	}
 
-	public String getJavaPath() {
-		return javaPath == null ? "":javaPath;
+	public List<MainConfig> getMcs() {
+		if (null == mcs) {
+			mcs = new ArrayList<>();
+		}
+		return mcs;
 	}
 
-	public void setJavaPath(String javaPath) {
-		this.javaPath = javaPath;
+	public DatabaseConfig getDc(String dcName) {
+		if (null == dcs || dcs.size() <= 0) {
+			return null;
+		}
+		if (StringUtils.isBlank(dcName)) {
+			return null;
+		}
+		for (DatabaseConfig dc : dcs) {
+			if (dcName.equals(dc.getOtherName())) {
+				return dc;
+			}
+		}
+		return null;
 	}
 
-	public String getResourcesPath() {
-		return resourcesPath == null ? "":resourcesPath;
+	public MainConfig getMc(String name) {
+		if (null == mcs || mcs.size() <= 0) {
+			return null;
+		}
+		if (StringUtils.isBlank(name)) {
+			return null;
+		}
+		for (MainConfig mc : mcs) {
+			if (name.equals(mc.getName())) {
+				return mc;
+			}
+		}
+		return null;
 	}
 
-	public void setResourcesPath(String resourcesPath) {
-		this.resourcesPath = resourcesPath;
+	public PackageConfig getPc(String name) {
+		if (null == pcs || pcs.size() <= 0) {
+			return null;
+		}
+		if (StringUtils.isBlank(name)) {
+			return null;
+		}
+		for (PackageConfig pc : pcs) {
+			if (name.equals(pc.getName())) {
+				return pc;
+			}
+		}
+		return null;
 	}
 
-	public String getDbName() {
-		return dbName == null ? "":dbName;
+	public String[] getDcsNames(String name) {
+		List<String> list = new ArrayList<>();
+		for (DatabaseConfig dc : dcs) {
+			if (!name.equals(dc.getOtherName())) {
+				list.add(dc.getOtherName());
+			}
+		}
+		list.add(0, name);
+		String[] names = new String[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			names[i] = list.get(i);
+		}
+		return names;
 	}
 
-	public void setDbName(String dbName) {
-		this.dbName = dbName;
+	public String[] getPcsNames(String name) {
+		List<String> list = new ArrayList<>();
+		for (PackageConfig pc : pcs) {
+			if (!name.equals(pc.getName())) {
+				list.add(pc.getName());
+			}
+		}
+		list.add(0, name);
+		String[] names = new String[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			names[i] = list.get(i);
+		}
+		return names;
 	}
 
-	public String getDbHost() {
-		return dbHost == null ? "":dbHost;
+	public String[] getMcsNames(String name) {
+		List<String> list = new ArrayList<>();
+		for (MainConfig mc : mcs) {
+			if (!name.equals(mc.getName())) {
+				list.add(mc.getName());
+			}
+		}
+		list.add(0, name);
+		String[] names = new String[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			names[i] = list.get(i);
+		}
+		return names;
 	}
 
-	public void setDbHost(String dbHost) {
-		this.dbHost = dbHost;
+	public void setMcs(List<MainConfig> mcs) {
+		this.mcs = mcs;
 	}
 
-	public String getDbPort() {
-		return dbPort == null ? "":dbPort;
+	public List<DatabaseConfig> getDcs() {
+		if (null == dcs) {
+			dcs = new ArrayList<>();
+		}
+		return dcs;
 	}
 
-	public void setDbPort(String dbPort) {
-		this.dbPort = dbPort;
+	public void setDcs(List<DatabaseConfig> dcs) {
+		this.dcs = dcs;
 	}
 
-	public String getUsername() {
-		return username == null ? "":username;
+	public List<PackageConfig> getPcs() {
+		if (null == pcs) {
+			pcs = new ArrayList<>();
+		}
+		return pcs;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setPcs(List<PackageConfig> pcs) {
+
+		this.pcs = pcs;
 	}
 
-	public String getPasswd() {
-		return passwd == null ? "":passwd;
-	}
-
-	public void setPasswd(String passwd) {
-		this.passwd = passwd;
-	}
-
-	public String getDbType() {
-		return dbType == null ? "oracle":dbType;
-	}
-
-	public void setDbType(String dbType) {
-		this.dbType = dbType;
-	}
-
-	public String getModel() {
-		return model == null ? "":model;
-	}
-
-	public void setModel(String model) {
-		this.model = model;
-	}
-
-	public String getSqlmap() {
-		return sqlmap == null ? "":sqlmap;
-	}
-
-	public void setSqlmap(String sqlmap) {
-		this.sqlmap = sqlmap;
-	}
-
-	public String getClient() {
-		return client == null ? "":client;
-	}
-
-	public void setClient(String client) {
-		this.client = client;
+	@Override
+	public String toString() {
+		return "MybatisPluginSetting{" +
+				"mcs=" + mcs +
+				", dcs=" + dcs +
+				", pcs=" + pcs +
+				'}';
 	}
 }

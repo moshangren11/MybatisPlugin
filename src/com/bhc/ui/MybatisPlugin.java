@@ -9,53 +9,56 @@
  */
 package com.bhc.ui;
 
+import com.bhc.setting.DBSetting;
+import com.bhc.setting.MainSetting;
+import com.bhc.setting.SettingManager;
 import com.bhc.tools.DBTools;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.File;
+import java.util.HashMap;
 
 /**
  * ClassName MybatisPlugin
- * Description TODO
- * @author zhanggd16816 zhanggd16816@hundsun.com
+ * Description
+ * @author zhanggd16816
  * @date 2018-05-17 0017 23:03
  */
 public class MybatisPlugin {
 	public TextFieldWithBrowseButton javaFolder;
 	public JTextField dbnameField;
 	public JPanel mainPanel;
-	public JLabel javaLabel;
-	public JPanel javaPanel;
-	public JPanel zyPanel;
-	public JLabel zyLabel;
+	private JLabel javaLabel;
+	private JPanel javaPanel;
+	private JPanel zyPanel;
+	private JLabel zyLabel;
 	public TextFieldWithBrowseButton zyFolder;
-	public JLabel dataLabel;
-	public JPanel dataPanel;
+	private JLabel dataLabel;
+	private JPanel dataPanel;
 	public JTextField portField;
-	public JLabel hostName;
-	public JLabel portName;
+	private JLabel hostName;
+	private JLabel portName;
 	public JTextField hostFaield;
 	public JTextField usernameField;
 	public JTextField passwdField;
 	public JButton connButton;
 	public JLabel connTest;
 	public JComboBox dbComboBox;
-	private static final String[] cb = {"mysql","oracle"};
+	public JComboBox configNameComboBox;
+	public JComboBox databaseComboBox;
+	private JButton delMCButton;
+	private JButton delDCButton;
+	private static final String[] DBTYPE = {"oracle","mysql"};
+	private SettingManager setting = SettingManager.getInstance();
 
-	public MybatisPlugin(String dbname){
+	public MybatisPlugin(){
 		connTest.setText("");
-		if(dbname.equals(cb[0])){
-			dbComboBox.addItem("mysql");
-			dbComboBox.addItem("oracle");
-		}else {
-			dbComboBox.addItem("oracle");
-			dbComboBox.addItem("mysql");
-		}
 		FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
 		javaFolder.addBrowseFolderListener(new TextBrowseFolderListener(descriptor) {
 			@Override
@@ -106,14 +109,14 @@ public class MybatisPlugin {
 				super.mouseClicked(e);
 				connTest.setText("");
 				boolean tBool = false;
-				if(dbComboBox.getSelectedItem().equals(cb[0])){
+				if(dbComboBox.getSelectedItem().equals(DBTYPE[1])){
 					//mysql
 
 					tBool = DBTools.connectDB(DBTools.MYSQL_DRIVER,
 							DBTools.buildMysqlUrl(hostFaield.getText(), portField.getText(), dbnameField.getText()),
 							usernameField.getText(),
 							passwdField.getText());
-				}else if(dbComboBox.getSelectedItem().equals(cb[1])){
+				}else if(dbComboBox.getSelectedItem().equals(DBTYPE[0])){
 					//oracle
 					tBool = DBTools.connectDB(DBTools.ORACLE_DRIVER,
 							DBTools.buildOracleUrl(hostFaield.getText(), portField.getText(), dbnameField.getText()),
@@ -127,5 +130,154 @@ public class MybatisPlugin {
 				}
 			}
 		});
+
+
+		configNameComboBox.addActionListener(new ActionListener(){
+			/**
+			 * Invoked when an action occurs.
+			 *
+			 * @param e
+			 */
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getActionCommand().equals("comboBoxChanged")){
+					String name = (String) configNameComboBox.getSelectedItem();
+					MainSetting mainSetting = setting.getMainSetting(name);
+					if(null == mainSetting){
+						return;
+					}
+					setMainParam(mainSetting);
+				}
+			}
+		});
+
+		databaseComboBox.addActionListener(new ActionListener(){
+
+			/**
+			 * Invoked when an action occurs.
+			 *
+			 * @param e
+			 */
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getActionCommand().equals("comboBoxChanged")){
+					String dcName = (String) databaseComboBox.getSelectedItem();
+					DBSetting dbSetting = setting.getDBSetting(dcName);
+					if(null == dbSetting){
+						return;
+					}
+					setDBParam(dbSetting);
+				}
+			}
+		});
+
+		delDCButton.addMouseListener(new MouseAdapter() {
+			/**
+			 * {@inheritDoc}
+			 *
+			 * @param e
+			 */
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+				String dcName = (String) databaseComboBox.getSelectedItem();
+				if(setting.delDc(dcName)){
+					//删除成功刷新页面
+					DBSetting dbSetting = setting.getDBSetting();
+					setDBParam(dbSetting);
+				}
+			}
+		});
+
+		delMCButton.addMouseListener(new MouseAdapter() {
+			/**
+			 * {@inheritDoc}
+			 *
+			 * @param e
+			 */
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+				String mcName = (String) configNameComboBox.getSelectedItem();
+				if(setting.delMc(mcName)){
+					//删除成功刷新页面
+					MainSetting mainSetting = setting.getMainSetting();
+					setMainParam(mainSetting);
+				}
+			}
+		});
+	}
+
+	public void setMainAndDB(MainSetting mainSetting,DBSetting dbSetting){
+		setMainParam(mainSetting);
+		setDBParam(dbSetting);
+	}
+
+	private void setDBParam(DBSetting dbSetting){
+		if (null == dbSetting) {
+			this.portField.setText("");
+			this.hostFaield.setText("");
+			this.dbnameField.setText("");
+			this.usernameField.setText("");
+			this.passwdField.setText("");
+			databaseComboBox.removeAllItems();
+			setDbtype("");
+			return;
+		}
+		if(null != dbSetting.getOtherNames()){
+			databaseComboBox.removeAllItems();
+			for (String name:dbSetting.getOtherNames()) {
+				databaseComboBox.addItem(name);
+			}
+			databaseComboBox.setSelectedIndex(0);
+		}
+		this.hostFaield.setText(dbSetting.getHost());
+		this.dbnameField.setText(dbSetting.getDbName());
+		this.portField.setText(dbSetting.getPort());
+		this.usernameField.setText(dbSetting.getUserNmae());
+		this.passwdField.setText(dbSetting.getPasswd());
+		setDbtype(dbSetting.getDbType());
+	}
+
+	private void setMainParam(MainSetting mainSetting) {
+		if (null == mainSetting) {
+			this.hostFaield.setText("");
+			this.dbnameField.setText("");
+			this.portField.setText("");
+			this.usernameField.setText("");
+			this.passwdField.setText("");
+			this.javaFolder.setText("");
+			this.zyFolder.setText("");
+			configNameComboBox.removeAllItems();
+			setDbtype("");
+			return;
+		}
+
+		this.javaFolder.setText(mainSetting.getJavaPath());
+		this.zyFolder.setText(mainSetting.getZyPath());
+		if (null != mainSetting.getNames()) {
+			configNameComboBox.removeAllItems();
+			for (String name : mainSetting.getNames()) {
+				configNameComboBox.addItem(name);
+			}
+			configNameComboBox.setSelectedIndex(0);
+		}
+	}
+
+	/**
+	 * 设置数据库类型下拉按钮
+	 * @param type
+	 */
+	public void setDbtype(String type){
+		dbComboBox.removeAllItems();
+		if(StringUtils.isNotBlank(type)){
+			dbComboBox.addItem(type);
+		}
+		for (String s:DBTYPE){
+			if(!s.equals(type)){
+				dbComboBox.addItem(s);
+			}
+		}
+		dbComboBox.setSelectedIndex(0);
 	}
 }

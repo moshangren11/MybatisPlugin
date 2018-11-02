@@ -9,10 +9,13 @@
  */
 package com.bhc.config;
 
-import com.bhc.setting.MybatisPluginSetting;
+import com.bhc.setting.DBSetting;
+import com.bhc.setting.MainSetting;
+import com.bhc.setting.SettingManager;
 import com.bhc.ui.MybatisPlugin;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +31,8 @@ import javax.swing.*;
 public class MybatisConfigurable implements Configurable {
 
 	private MybatisPlugin mybatisPlugin;
-	private MybatisPluginSetting setting = MybatisPluginSetting.getInstance();
+
+	private SettingManager setting = SettingManager.getInstance();
 
 	@Nullable
 	@Override
@@ -41,14 +45,48 @@ public class MybatisConfigurable implements Configurable {
 	 */
 	@Override
 	public void reset() {
-		this.mybatisPlugin.hostFaield.setText(this.setting.getDbHost());
-		this.mybatisPlugin.dbnameField.setText(this.setting.getDbName());
-		this.mybatisPlugin.portField.setText(this.setting.getDbPort());
-		this.mybatisPlugin.javaFolder.setText(this.setting.getJavaPath());
-		this.mybatisPlugin.zyFolder.setText(this.setting.getResourcesPath());
-		this.mybatisPlugin.usernameField.setText(setting.getUsername());
-		this.mybatisPlugin.passwdField.setText(setting.getPasswd());
-		this.mybatisPlugin.connTest.setText("");
+		mybatisPlugin.connTest.setText("");
+		MainSetting mainSetting = setting.getMainSetting();
+		DBSetting dbSetting = setting.getDBSetting();
+		mybatisPlugin.setMainAndDB(mainSetting, dbSetting);
+	}
+
+	private boolean isModifiedByMc() {
+		MainSetting mainSetting = setting.getMainSetting();
+		boolean flag = false;
+		if (null != mainSetting) {
+			flag = !mainSetting.getName().equals(mybatisPlugin.configNameComboBox.getSelectedItem()) ||
+					!mainSetting.getJavaPath().equals(this.mybatisPlugin.javaFolder.getText()) ||
+					!mainSetting.getZyPath().equals(this.mybatisPlugin.zyFolder.getText());
+		} else {
+			flag = null != mybatisPlugin.configNameComboBox.getSelectedItem() ||
+					StringUtils.isNotBlank(mybatisPlugin.zyFolder.getText()) ||
+					StringUtils.isNotBlank(mybatisPlugin.javaFolder.getText());
+		}
+		return flag;
+	}
+
+	private boolean isModifiedByDc() {
+		DBSetting dbSetting = setting.getDBSetting();
+		boolean isDb = false;
+		if (null != dbSetting) {
+			isDb = !dbSetting.getOtherName().equals(mybatisPlugin.databaseComboBox.getSelectedItem()) ||
+					!dbSetting.getDbName().equals(mybatisPlugin.dbnameField.getText()) ||
+					!dbSetting.getDbType().equals(mybatisPlugin.dbComboBox.getSelectedItem()) ||
+					!dbSetting.getHost().equals(mybatisPlugin.hostFaield.getText()) ||
+					!dbSetting.getPort().equals(mybatisPlugin.portField.getText()) ||
+					!dbSetting.getUserNmae().equals(mybatisPlugin.usernameField.getText()) ||
+					!dbSetting.getPasswd().equals(mybatisPlugin.passwdField.getText());
+
+		} else {
+			isDb = null != mybatisPlugin.databaseComboBox.getSelectedItem() ||
+					StringUtils.isNotBlank(mybatisPlugin.dbnameField.getText()) ||
+					StringUtils.isNotBlank(mybatisPlugin.hostFaield.getText()) ||
+					StringUtils.isNotBlank(mybatisPlugin.portField.getText()) ||
+					StringUtils.isNotBlank(mybatisPlugin.usernameField.getText()) ||
+					StringUtils.isNotBlank(mybatisPlugin.passwdField.getText());
+		}
+		return isDb;
 	}
 
 	/**
@@ -58,14 +96,7 @@ public class MybatisConfigurable implements Configurable {
 	 */
 	@Override
 	public boolean isModified() {
-		return !this.setting.getDbHost().equals(this.mybatisPlugin.hostFaield.getText()) ||
-				!this.setting.getDbName().equals(this.mybatisPlugin.dbnameField.getText()) ||
-				!this.setting.getDbPort().equals(this.mybatisPlugin.portField.getText()) ||
-				!this.setting.getJavaPath().equals(this.mybatisPlugin.javaFolder.getText()) ||
-				!this.setting.getResourcesPath().equals(this.mybatisPlugin.zyFolder.getText()) ||
-				!this.setting.getUsername().equals(mybatisPlugin.usernameField.getText()) ||
-				!setting.getPasswd().equals(mybatisPlugin.passwdField.getText())||
-				!setting.getDbType().equals((String)mybatisPlugin.dbComboBox.getSelectedItem());
+		return isModifiedByMc() || isModifiedByDc();
 	}
 
 	@Nls
@@ -78,7 +109,7 @@ public class MybatisConfigurable implements Configurable {
 	@Override
 	public JComponent createComponent() {
 		if (null == this.mybatisPlugin) {
-			this.mybatisPlugin = new MybatisPlugin(this.setting.getDbType());
+			this.mybatisPlugin = new MybatisPlugin();
 		}
 		return this.mybatisPlugin.mainPanel;
 	}
@@ -90,13 +121,49 @@ public class MybatisConfigurable implements Configurable {
 	 */
 	@Override
 	public void apply() throws ConfigurationException {
-		this.setting.setDbHost(this.mybatisPlugin.hostFaield.getText());
-		this.setting.setDbName(this.mybatisPlugin.dbnameField.getText());
-		this.setting.setDbPort(this.mybatisPlugin.portField.getText());
-		this.setting.setJavaPath(this.mybatisPlugin.javaFolder.getText());
-		this.setting.setResourcesPath(this.mybatisPlugin.zyFolder.getText());
-		this.setting.setUsername(this.mybatisPlugin.usernameField.getText());
-		this.setting.setPasswd(this.mybatisPlugin.passwdField.getText());
-		setting.setDbType((String)mybatisPlugin.dbComboBox.getSelectedItem());
+		String javaPath = this.mybatisPlugin.javaFolder.getText();
+		String zyPatch = this.mybatisPlugin.zyFolder.getText();
+		String name = (String) mybatisPlugin.configNameComboBox.getSelectedItem();
+
+		String host = this.mybatisPlugin.hostFaield.getText();
+		String dbName = this.mybatisPlugin.dbnameField.getText();
+		String port = this.mybatisPlugin.portField.getText();
+		String userNmae = this.mybatisPlugin.usernameField.getText();
+		String passwd = this.mybatisPlugin.passwdField.getText();
+		String otherName = (String) this.mybatisPlugin.databaseComboBox.getSelectedItem();
+		String dbType = (String) this.mybatisPlugin.dbComboBox.getSelectedItem();
+
+		MainSetting mainSetting = null;
+		if (isModifiedByMc()) {
+			mainSetting = new MainSetting();
+			if (StringUtils.isBlank(name)) {
+				name = setting.getNewName("mc");
+			}
+			mainSetting.setName(name);
+			mainSetting.setZyPath(zyPatch);
+			mainSetting.setJavaPath(javaPath);
+		}
+
+		DBSetting dbSetting = null;
+		if (isModifiedByDc()) {
+			dbSetting = new DBSetting();
+			if (StringUtils.isBlank(otherName)) {
+				otherName = setting.getNewName("dc");
+			}
+			dbSetting.setOtherName(otherName);
+			dbSetting.setDbName(dbName);
+			dbSetting.setDbType(dbType);
+			dbSetting.setHost(host);
+			dbSetting.setPort(port);
+			dbSetting.setUserNmae(userNmae);
+			dbSetting.setPasswd(passwd);
+		}
+		setting.setMainSetting(mainSetting, dbSetting);
+
+		//重构页面
+		MainSetting nowMainSetting = setting.getMainSetting(name);
+		DBSetting nowDBSetting = setting.getDBSetting(otherName);
+		mybatisPlugin.setMainAndDB(nowMainSetting, nowDBSetting);
 	}
+
 }

@@ -17,6 +17,7 @@ import java.sql.SQLException;
 /**
  * ClassName DBTools
  * Description 数据库连接工具
+ *
  * @author zhanggd16816 zhanggd16816@hundsun.com
  * @date 2018-05-19 0019 22:56
  */
@@ -28,56 +29,76 @@ public class DBTools {
 
 	/**
 	 * 生成mysqlURL
+	 *
 	 * @param host
 	 * @param port
 	 * @param dbname
 	 * @return
 	 */
-	public static String buildMysqlUrl(String host,String port,String dbname){
-
-		StringBuffer sb = new StringBuffer("jdbc:mysql://");
+	public static String buildMysqlUrl(String host, String port, String dbname) {
+		StringBuilder sb = new StringBuilder("jdbc:mysql://");
 		sb.append(host).append(":").append(port).append("/").append(dbname);
 		return sb.toString();
+
 	}
 
 	/**
 	 * 测试连接oracle
+	 *
 	 * @param host
 	 * @param port
 	 * @param dbname
 	 * @return
 	 */
-	public static String buildOracleUrl(String host,String port,String dbname){
-		StringBuffer sb = new StringBuffer("jdbc:oracle:thin:@");
+	public static String buildOracleUrl(String host, String port, String dbname) {
+		StringBuilder sb = new StringBuilder("jdbc:oracle:thin:@");
 		sb.append(host).append(":").append(port).append(":").append(dbname);
 		return sb.toString();
 	}
 
 	/**
 	 * 测试连接数据库
+	 *
 	 * @param driver
 	 * @param url
 	 * @param username
 	 * @param passwd
 	 * @return
 	 */
-	public static boolean connectDB(String driver,String url,String username,String passwd){
+	public static boolean connectDB(String driver, String url, String username, String passwd) {
+
+		Connection con = null;
+		PreparedStatement pst = null;
 		try {
 			//创建驱动器
 			Class.forName(driver);
 			//这是数据库的路径，并且还有输入账号（一般默认是root），密码之前创建用户时的那个
-			Connection con=DriverManager.getConnection(url,username,passwd);
+			con = DriverManager.getConnection(url, username, passwd);
 			//输入的是要在MySQL中执行的代码
-			PreparedStatement pst=con.prepareCall("select 1+1 from dual");
-			//获得执行上面代码后的结果集
-			pst.close();
-			return true;
+			pst = con.prepareCall("select 1+1 from dual");
 		} catch (ClassNotFoundException ex) {
 			return false;
 		} catch (SQLException ex) {
 			return false;
-		} catch (Exception ex){
+		} catch (Exception ex) {
 			return false;
+		} finally {
+			try {
+				if (null != pst) {
+					pst.close();
+				}
+			} catch (Exception e) {
+				System.out.println("pst关闭异常");
+			}
+			try {
+				if (null != con) {
+					con.close();
+				}
+			} catch (Exception e) {
+				System.out.println("con关闭异常");
+			}
 		}
+
+		return true;
 	}
 }

@@ -36,7 +36,7 @@ public class OverIsMergeablePlugin extends SerializablePlugin {
 			field.setAccessible(true);
 			field.setBoolean(sqlMap, false);
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("sqlMapGenerated空指针异常");
 		}
 		return true;
 	}

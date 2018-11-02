@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
  */
 public class MybatisTools {
 
-	public static Pattern packagePattern = Pattern.compile("^([a-zA-Z]+[.][a-zA-Z]+)[.]*.*");
-	public static Pattern tablePattern = Pattern.compile("[a-zA-Z]+[0-9a-zA-Z_,]*");
+	public static final Pattern packagePattern = Pattern.compile("^([a-zA-Z]+[.][a-zA-Z]+)[.]*.*");
+	public static final Pattern tablePattern = Pattern.compile("[a-zA-Z]+[0-9a-zA-Z_,]*");
 	/**
 	 * 首字母大写
 	 * @param str
