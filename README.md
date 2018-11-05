@@ -56,3 +56,5 @@ MybatisPlugin
 ## 注意事项
   * 建表时，字段名称建议用"_"分隔多个单词，比如:user_id，这样生成的entity，属性名称就会变成驼峰命名，即：userId
   * oracle中的nvarchar/nvarchar2，mybatis-generator会识别成Object型，建议不要用nvarchar2，改用varchar2
+## 其他
+个人博客：[https://www.ggwp.net.cn](https://www.ggwp.net.cn)
