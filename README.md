@@ -7,8 +7,9 @@ MybatisPlugin
     完全是不想通过jar去生成文件，也不想集成到项目中，就想搞一个插件一劳永逸
 
 ## 如何找到插件
-    在IDEA内：setting -> Plugins -> Browse Repositories，搜索 build mybatis File Plugin
-    或者去web端插件库[下载离线版本](https://plugins.jetbrains.com/plugin/10765-build-mybatis-file-plugin)
+  * 在IDEA内：setting -> Plugins -> Browse Repositories，搜索 build mybatis File Plugin
+  * 去web端插件库[下载离线版本](https://plugins.jetbrains.com/plugin/10765-build-mybatis-file-plugin)
+  * 百度网盘[下载最新版本](https://pan.baidu.com/s/1ygis845qerRSOaz1BIl08g) 提取码：n4iq  `ps：因审核较慢，网盘版本会比插件库版本高` 
     
 ## 如何使用插件
 * 打开插件
