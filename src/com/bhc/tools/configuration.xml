@@ -26,9 +26,9 @@
         默认false，把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer
             true，把JDBC DECIMAL 和 NUMERIC 类型解析为java.math.BigDecimal
         -->
-        <javaTypeResolver>
-            <property name="forceBigDecimals" value="true" />
-        </javaTypeResolver>
+        <!--<javaTypeResolver>-->
+            <!--<property name="forceBigDecimals" value="true" />-->
+        <!--</javaTypeResolver>-->
 
         <!--
         生成model模型，对应的包路径，以及文件存放路径(targetProject)，targetProject可以指定具体的路径,如./src/main/java，

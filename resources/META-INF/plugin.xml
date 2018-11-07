@@ -11,6 +11,7 @@
   <change-notes><![CDATA[
       修改界面，添加可输入的下拉选项
       增加对配置的留存与删除功能，可保存多项配置
+      javaTypeResolver的forceBigDecimals参数置为false
     ]]>
   </change-notes>
 
