@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.bhc.plugin.mybatis</id>
   <name>Build Mybatis File Plugin</name>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <vendor email="315316371@qq.com" url="https://github.com/moshangren11/MybatisPlugin">MybatisPlugin</vendor>
 
   <description><![CDATA[MybatisPlugin.zip
@@ -9,9 +9,7 @@
   ]]></description>
 
   <change-notes><![CDATA[
-      修改界面，添加可输入的下拉选项
-      增加对配置的留存与删除功能，可保存多项配置
-      javaTypeResolver的forceBigDecimals参数置为false
+      修改oracle数据库下number全部转换成BigDecimal的问题
     ]]>
   </change-notes>
 
