@@ -59,3 +59,9 @@ MybatisPlugin
   * 点击完创建按钮，显示创建成功后，需要刷新工程目录
 ## 其他
 个人博客：[https://www.ggwp.net.cn](https://www.ggwp.net.cn)
+## 版本
+ * 1.0.6
+   * 修改界面，添加可输入的下拉选项
+   * 增加对配置的留存与删除功能，可保存多项配置
+ * 1.0.7
+   * 修改oracle数据库下number全部转换成BigDecimal的问题
