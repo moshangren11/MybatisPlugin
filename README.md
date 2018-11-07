@@ -7,12 +7,12 @@ MybatisPlugin
     完全是不想通过jar去生成文件，也不想集成到项目中，就想搞一个插件一劳永逸
 
 ## 如何找到插件
-  * 当前版本：1.0.5，审核中版本：1.0.6/1.0.7
-    * 在IDEA内：setting -> Plugins -> Browse Repositories，搜索 build mybatis File Plugin
-    * 去web端插件库[下载离线版本](https://plugins.jetbrains.com/plugin/10765-build-mybatis-file-plugin)
-  * 当前版本：1.0.7
-    * 百度网盘[下载最新版本](https://pan.baidu.com/s/1ygis845qerRSOaz1BIl08g) 提取码：n4iq  `ps：因审核较慢，网盘版本会比插件库版本高` 
-    
+  * 当前版本：1.0.8
+    * 在IDEA内：setting -> Plugins -> Browse Repositories，搜索 build mybatis File
+    * 去web端插件库[下载离线版本](https://plugins.jetbrains.com/plugin/10765-build-mybatis-file)
+  * 当前版本：1.0.8 `ps：因审核较慢，网盘版本会比插件库版本高`
+    * 1.0.7 百度网盘[下载最新版本](https://pan.baidu.com/s/1ygis845qerRSOaz1BIl08g) 提取码：n4iq   
+    * 1.0.8 百度网盘[下载最新版本](https://pan.baidu.com/s/1krbcXcOJ6Ajsp5vx0QjsBQ) 提取码：fu8s   
 ## 如何使用插件
 * 打开插件
   * 在IDEA内：setting -> Other Settings -> Mybatis Plugin
@@ -68,3 +68,6 @@ MybatisPlugin
    * 增加对配置的留存与删除功能，可保存多项配置
  * 1.0.7
    * 修改oracle数据库下number全部转换成BigDecimal的问题
+ * 1.0.8
+   * 修改插件名称,去掉Plugin单词
+   * 修改Plugin.xml中中文说明为英文说明
