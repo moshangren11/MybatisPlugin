@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.bhc.plugin.mybatis</id>
   <name>Build Mybatis File</name>
-  <version>1.0.8</version>
+  <version>1.0.9</version>
   <vendor email="315316371@qq.com" url="https://github.com/moshangren11/MybatisPlugin">MybatisPlugin</vendor>
 
   <description><![CDATA[MybatisPlugin.zip
@@ -9,11 +9,10 @@
   ]]></description>
 
   <change-notes><![CDATA[
-      Modify the plugin name.
-      Modify the interface and add drop-down options that you can enter.
-      Adding retention and deletion to the configuration saves multiple configurations.
-      Modify the problem of overwriting generated files in the case of multi-instance multi-user.
-      Modify the oracle database to convert all numbers into BigDecimal.
+      修复无网络条件下，生成文件失败的问题
+      修复其它已发现bug
+      增加操作说明地址
+      祭天
     ]]>
   </change-notes>
 

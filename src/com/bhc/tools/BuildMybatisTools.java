@@ -45,6 +45,8 @@ public class BuildMybatisTools {
 			//如果这里出现空指针，直接写绝对路径即可。
 			InputStream is= BuildMybatisTools.class.getResourceAsStream("configuration.xml");
 			SAXReader reader = new SAXReader();
+			reader.setValidation(false);
+			reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 			Document document = reader.read(is);
 			Element rootElem = document.getRootElement();
 			Element contactElem = rootElem.element("context");
